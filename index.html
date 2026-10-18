@@ -1,6 +1,347 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#100a2b"><title>The Legend of Anantam</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="stars" aria-hidden="true"></div><header><div class="brand">✧ THE LEGEND OF <b>ANANTAM</b></div><div class="chapter"><span id="chapterNo">01</span> / <span id="chapterName">THE AWAKENING</span></div><button id="soundBtn" class="small-btn" title="Toggle narration">🔊 Narration off</button></header>
-<main><section class="navya-side"><div class="halo"></div><div class="character-wrap"><img id="navya" src="navya-reference.jpeg" alt="Navya, wearing a royal blue magical gown"><div class="eye eye-left"><i></i></div><div class="eye eye-right"><i></i></div></div><div class="nameplate"><span>YOUR GUIDE THROUGH ANANTAM</span><h2>Navya <span>✦</span></h2><p id="navyaMood">Curious and ready for the journey</p></div><div class="speech"><span class="quote-mark">“</span><p id="navyaLine">Welcome, traveller. I am Navya, and I will guide you through the world of Anantam.</p></div><div class="auto-note"><span class="pulse"></span> THE STORY PLAYS AUTOMATICALLY</div></section>
-<section class="story-side"><div class="scene-art" id="sceneArt"><div class="rune">✧</div><div class="art-ring"></div><img id="featured" src="navya-reference.jpeg" alt="Story scene illustration"><div class="art-caption" id="artCaption">A WORLD HELD BY AN ANCIENT POWER</div></div><div class="story-content"><p class="eyebrow" id="eyebrow">PROLOGUE · THE FIRST LIGHT</p><h1 id="title">A world called <em>Anantam</em></h1><p class="body-copy" id="storyText">Long ago, an ancient energy named Anantam protected peace and balance throughout the world.</p><div class="story-footer"><div class="progress"><span id="progress"></span></div><span id="sceneCounter">SCENE 1 OF 6</span></div><div class="controls"><button id="pauseBtn" class="secondary">Ⅱ Pause story</button><button id="nextBtn" class="primary">Skip ahead ↗</button></div></div></section></main>
-<footer><span>AN ORIGINAL FANTASY CHRONICLE</span><span>FOLLOW THE LIGHT · FIND THE NEELAMANI</span></footer><div id="secret" class="secret" aria-live="polite"></div><script src="script.js"></script></body></html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#100a2b">
+
+    <title>The Legend of Anantam</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="stars" aria-hidden="true"></div>
+
+    <header>
+
+        <div class="brand">
+            ✧ THE LEGEND OF <b>ANANTAM</b>
+        </div>
+
+        <div class="chapter">
+            <span id="chapterNo">01</span> /
+            <span id="chapterName">THE AWAKENING</span>
+        </div>
+
+        <div class="top-tools">
+
+            <button id="soundBtn"
+                    class="small-btn"
+                    title="Toggle narration">
+                🗣️ Narration off
+            </button>
+
+            <button id="moodBtn"
+                    class="small-btn"
+                    title="Switch day and night">
+                🌙 Night mode
+            </button>
+
+            <button id="musicBtn"
+                    class="small-btn"
+                    title="Toggle magical ambience">
+                🎵 Music off
+            </button>
+
+            <button id="flashBtn"
+                    class="small-btn"
+                    title="Toggle magical flashlight">
+                🔦 Light off
+            </button>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <!-- NAVYA CHARACTER SECTION -->
+
+        <section class="navya-side">
+
+            <div class="halo"></div>
+
+            <div class="character-wrap">
+
+                <img id="navya"
+                     src="navya-reference.jpeg"
+                     alt="Navya, wearing a royal blue magical gown">
+
+                <div class="eye eye-left">
+                    <i></i>
+                </div>
+
+                <div class="eye eye-right">
+                    <i></i>
+                </div>
+
+            </div>
+
+            <div class="nameplate">
+
+                <span>YOUR GUIDE THROUGH ANANTAM</span>
+
+                <h2>
+                    Navya <span>✦</span>
+                </h2>
+
+                <p id="navyaMood">
+                    Curious and ready for the journey
+                </p>
+
+            </div>
+
+            <div class="speech">
+
+                <span class="quote-mark">“</span>
+
+                <p id="navyaLine">
+                    Welcome, traveller. I am Navya, and I will guide you
+                    through the world of Anantam.
+                </p>
+
+            </div>
+
+            <div class="auto-note">
+                <span class="pulse"></span>
+                THE STORY PLAYS AUTOMATICALLY
+            </div>
+
+        </section>
+
+
+        <!-- STORY SECTION -->
+
+        <section class="story-side">
+
+            <div class="scene-art" id="sceneArt">
+
+                <!-- SECRET EASTER EGG RUNE -->
+                <a href="forbidden-chapter.html"
+                   class="rune"
+                   id="forbiddenRune"
+                   title="A secret waits beyond this rune"
+                   aria-label="Discover the Forbidden Chapter"
+                   style="
+                       position: relative;
+                       z-index: 20;
+                       display: inline-block;
+                       text-decoration: none;
+                       color: inherit;
+                       cursor: pointer;
+                   ">✧</a>
+
+                <div class="art-ring"></div>
+
+                <img id="featured"
+                     src="navya-reference.jpeg"
+                     alt="Story scene illustration">
+
+                <div class="art-caption" id="artCaption">
+                    A WORLD HELD BY AN ANCIENT POWER
+                </div>
+
+            </div>
+
+
+            <div class="story-content">
+
+                <p class="eyebrow" id="eyebrow">
+                    PROLOGUE · THE FIRST LIGHT
+                </p>
+
+                <h1 id="title">
+                    A world called <em>Anantam</em>
+                </h1>
+
+                <p class="body-copy" id="storyText">
+                    Long ago, an ancient energy named Anantam protected
+                    peace and balance throughout the world.
+                </p>
+
+                <div class="story-footer">
+
+                    <div class="progress">
+                        <span id="progress"></span>
+                    </div>
+
+                    <span id="sceneCounter">
+                        SCENE 1 OF 6
+                    </span>
+
+                </div>
+
+                <div class="controls">
+
+                    <button id="pauseBtn" class="secondary">
+                        Ⅱ Pause story
+                    </button>
+
+                    <button id="nextBtn" class="primary">
+                        Skip ahead ↗
+                    </button>
+
+                </div>
+
+                <!-- FINAL-CHAPTER MAGICAL EGG HUNT: hidden until the last scene -->
+                <section id="finalEggHunt" class="final-egg-hunt" hidden aria-labelledby="eggHuntTitle">
+                    <p class="eyebrow">A SECRET ONLY THE CURIOUS WILL FIND</p>
+                    <h2 id="eggHuntTitle">Three <em>Magical Eggs</em></h2>
+                    <p class="egg-intro">You have reached the final chapter. Discover each egg to claim its ancient title.</p>
+                    <div class="egg-grid">
+                        <button class="egg-card egg-gold" type="button" data-magic-egg="saviour">
+                            <span class="egg-shell" aria-hidden="true"><span>✦</span></span>
+                            <strong>Egg of the Chosen</strong>
+                            <small data-egg-status="saviour">Undiscovered</small>
+                        </button>
+                        <button class="egg-card egg-green" type="button" data-magic-egg="keeper">
+                            <span class="egg-shell" aria-hidden="true"><span>❖</span></span>
+                            <strong>Egg of Secrets</strong>
+                            <small data-egg-status="keeper">Undiscovered</small>
+                        </button>
+                        <button class="egg-card egg-violet" type="button" data-magic-egg="guardian">
+                            <span class="egg-shell" aria-hidden="true"><span>✧</span></span>
+                            <strong>Egg of Anantam</strong>
+                            <small data-egg-status="guardian">Undiscovered</small>
+                        </button>
+                    </div>
+                    <p id="eggCollectionStatus" class="egg-collection-status" aria-live="polite">0 of 3 magical eggs discovered</p>
+                </section>
+
+            </div>
+
+
+            <!-- EXISTING EXTRA FEATURES -->
+
+            <div class="extra-tools" aria-label="Explore more">
+
+                <button id="mapBtn" class="secondary">
+                    🗺️ Adventure map
+                </button>
+
+                <button id="bookBtn" class="secondary">
+                    📖 Storybook
+                </button>
+
+                <button id="gameBtn" class="primary">
+                    🎮 Catch the dreams
+                </button>
+
+            </div>
+
+            <!-- NEW: additive world, quest, inventory, mystery and choice systems -->
+            <section class="anantam-hub" aria-labelledby="hubTitle">
+                <div class="hub-heading">
+                    <p class="eyebrow">YOUR ADVENTURE CONTINUES</p>
+                    <h2 id="hubTitle">The <em>Anantam</em> Codex</h2>
+                    <p>Explore the living world, track your discoveries, and shape your legend.</p>
+                </div>
+                <div class="hub-grid">
+                    <button type="button" id="worldBtn" class="hub-card">
+                        <span aria-hidden="true">🌌</span><strong>Living World</strong><small>Magical atmosphere</small>
+                    </button>
+                    <button type="button" id="inventoryBtn" class="hub-card">
+                        <span aria-hidden="true">🎒</span><strong>Inventory</strong><small>Relics and rewards</small>
+                    </button>
+                    <button type="button" id="questsBtn" class="hub-card">
+                        <span aria-hidden="true">📜</span><strong>Quest Journal</strong><small>Your next steps</small>
+                    </button>
+                    <button type="button" id="choicesBtn" class="hub-card">
+                        <span aria-hidden="true">💫</span><strong>Navya's Choice</strong><small>Shape a moment</small>
+                    </button>
+                    <button type="button" id="mysteryBtn" class="hub-card">
+                        <span aria-hidden="true">🔐</span><strong>Forbidden Mystery</strong><small>Solve the rune riddle</small>
+                    </button>
+                </div>
+                <p id="worldStatus" class="world-status" aria-live="polite">✧ The ancient magic is awake.</p>
+            </section>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <span>AN ORIGINAL FANTASY CHRONICLE</span>
+
+        <span>FOLLOW THE LIGHT · FIND THE NEELAMANI</span>
+
+    </footer>
+
+
+    <!-- EXISTING SECRET MESSAGE AREA -->
+
+    <div id="secret"
+         class="secret"
+         aria-live="polite">
+    </div>
+
+
+    <!-- EXISTING FLASHLIGHT -->
+
+    <div id="flashlight" aria-hidden="true"></div>
+
+
+    <!-- EXISTING FEATURE MODAL -->
+
+    <div id="featureModal"
+         class="modal"
+         aria-hidden="true">
+
+        <div class="modal-card">
+
+            <button id="closeModal"
+                    class="modal-close"
+                    aria-label="Close">
+                ✕
+            </button>
+
+            <p class="eyebrow" id="modalEyebrow">
+                EXPLORE ANANTAM
+            </p>
+
+            <h2 id="modalTitle">
+                Dream map
+            </h2>
+
+            <div id="modalBody"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- EXISTING JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+
+    <!-- MAGICAL BACKGROUND MUSIC -->
+
+    <div id="magicMusicControl">
+
+        <button id="magicMusicBtn" type="button">
+            🪄 Play Magical Music
+        </button>
+
+        <audio id="magicBackgroundMusic"
+               loop
+               preload="none">
+
+            <source src="magical-theme.mp3" type="audio/mpeg">
+
+            Your browser does not support audio playback.
+
+        </audio>
+
+    </div>
+
+</body>
+
+</html>
