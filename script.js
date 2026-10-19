@@ -139,9 +139,11 @@ let visitorName = "";
 let isReturningVisitor = false;
 
 try {
-    visitorName = localStorage.getItem(ANANTAM_NAME_KEY) || "";
-    isReturningVisitor =
-        localStorage.getItem(ANANTAM_VISITED_KEY) === "true";
+    visitorName = (localStorage.getItem(ANANTAM_NAME_KEY) || localStorage.getItem("anantamVisitorName") || "").trim();
+    isReturningVisitor = !!visitorName || localStorage.getItem(ANANTAM_VISITED_KEY) === "true";
+    if (visitorName && !localStorage.getItem(ANANTAM_NAME_KEY)) {
+        localStorage.setItem(ANANTAM_NAME_KEY, visitorName);
+    }
 } catch (error) {
     console.warn("Visitor memory is unavailable in this browser.");
 }
@@ -150,29 +152,30 @@ function updateVisitorNameDisplay() {
     const display = document.getElementById("visitorNameDisplay");
 
     if (display) {
-        display.textContent =
-            `👑 ${visitorName || "Little Explorer"}`;
+        display.textContent = visitorName ? `👑 ${visitorName}` : "👑 Your adventure awaits";
     }
 }
 
 function personalizeVisitorText(text) {
     if (typeof text !== "string") return text;
 
-    return text.replace(/\btraveller\b/gi, () =>
-        visitorName || "Little Explorer"
-    );
+    return text.replace(/\btraveller\b/gi, () => visitorName || "friend");
 }
 
 function saveVisitorName(name) {
-    visitorName = name.trim().slice(0, 24) || "Little Explorer";
+    visitorName = name.trim().replace(/\s+/g, " ").slice(0, 24);
+    if (!visitorName) return;
 
     try {
         localStorage.setItem(ANANTAM_NAME_KEY, visitorName);
+        localStorage.setItem("anantamVisitorName", visitorName); // compatibility with older site features
         localStorage.setItem(ANANTAM_VISITED_KEY, "true");
+        localStorage.setItem("anantamVisitCount", String((Number(localStorage.getItem("anantamVisitCount")) || 0) + 1));
     } catch (error) {
         console.warn("Could not save the visitor name.");
     }
 
+    document.body.classList.remove("name-gate");
     updateVisitorNameDisplay();
 }
 
@@ -181,11 +184,7 @@ function getNavyaWelcomeMessage() {
         return `You're back, ${visitorName}! 💙 I’m so happy to see you again. Ready for another adventure?`;
     }
 
-    if (visitorName === "Little Explorer") {
-        return "Welcome, little explorer! ✨ A magical adventure awaits you!";
-    }
-
-    return `Welcome, ${visitorName}! ✨ A magical adventure awaits you!`;
+    return `Welcome, ${visitorName || "friend"}! ✨ A magical adventure awaits you!`;
 }
 
 /* Connect to your EXISTING name-entry form. */
@@ -201,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateVisitorNameDisplay();
 
     if (isReturningVisitor && visitorName) {
+        document.body.classList.remove("name-gate");
         if (greeting) greeting.textContent = `👑 Welcome back, ${visitorName}!`;
         if (message) message.textContent = getNavyaWelcomeMessage();
         if (input) input.value = visitorName;
@@ -219,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             saveVisitorName(name);
+            isReturningVisitor = false;
 
             if (greeting) greeting.textContent = `👑 Welcome, ${visitorName}!`;
             if (message) message.textContent = getNavyaWelcomeMessage();
@@ -482,14 +483,32 @@ $('soundBtn').addEventListener('click', () => {
 // NAVYA'S EYE MOVEMENT
 // ================================================
 
-document.addEventListener('pointermove', e => {
-    const dx = (e.clientX / window.innerWidth - 0.5) * 8;
-    const dy = (e.clientY / window.innerHeight - 0.5) * 5;
-
-    document.querySelectorAll('.eye i').forEach(p => {
-        p.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-});
+(() => {
+    const wrap = document.querySelector('.character-wrap');
+    if (!wrap) return;
+    const portrait = document.getElementById('navya');
+    const pupils = wrap.querySelectorAll('.eye i');
+    let raf = 0;
+    let targetX = 0, targetY = 0;
+    function resetPose() { targetX = 0; targetY = 0; applyPose(); }
+    function applyPose() {
+        raf = 0;
+        if (portrait && !wrap.classList.contains('model-mode')) {
+            portrait.style.setProperty('--navya-shift-x', `${targetX * 5}px`);
+            portrait.style.setProperty('--navya-shift-y', `${targetY * 3}px`);
+            portrait.style.setProperty('--navya-lean', `${targetX * 1.15}deg`);
+        }
+        pupils.forEach(p => { p.style.transform = `translate(${targetX * 2.8}px, ${targetY * 2.2}px)`; });
+    }
+    wrap.addEventListener('pointermove', e => {
+        if (e.pointerType === 'touch' || wrap.classList.contains('model-mode')) return;
+        const r = wrap.getBoundingClientRect();
+        targetX = Math.max(-1, Math.min(1, ((e.clientX - r.left) / Math.max(1, r.width) - .5) * 2));
+        targetY = Math.max(-1, Math.min(1, ((e.clientY - r.top) / Math.max(1, r.height) - .5) * 2));
+        if (!raf) raf = requestAnimationFrame(applyPose);
+    }, { passive: true });
+    wrap.addEventListener('pointerleave', resetPose, { passive: true });
+})();
 
 
 // ================================================
@@ -1585,93 +1604,4 @@ $('prayerBtn')?.addEventListener('click', renderPrayer);
       } catch (_) {}
     }
   });
-})();
-(() => {
-  const NAME_KEY = "anantamVisitorName";
-  const VISIT_KEY = "anantamVisitCount";
-
-  const greeting = document.getElementById("navyaGreeting");
-  const message = document.getElementById("navyaMessage");
-  const form = document.getElementById("navyaNameForm");
-  const input = document.getElementById("navyaNameInput");
-  const submit = document.getElementById("navyaNameButton");
-  const change = document.getElementById("navyaChangeName");
-
-  if (!greeting || !message || !form || !input || !submit || !change) {
-    return;
-  }
-
-  let visitorName = "";
-  let visits = 0;
-
-  try {
-    visitorName = localStorage.getItem(NAME_KEY) || "";
-    visits = Number(localStorage.getItem(VISIT_KEY)) || 0;
-  } catch (error) {
-    // The feature still works for this visit if storage is unavailable.
-  }
-
-  function showGreeting(isReturning) {
-    greeting.textContent = `✨ Welcome${visitorName ? ", " + visitorName : ""}! ✨`;
-
-    message.textContent = isReturning
-      ? `You're back! 💙 It's lovely to see you again. Ready for another Anantam adventure?`
-      : `I'm Navya! 💙 I'm so happy you're here. Let's explore Anantam together!`;
-
-    form.hidden = true;
-    change.hidden = false;
-  }
-
-  if (visitorName) {
-    visits += 1;
-
-    try {
-      localStorage.setItem(VISIT_KEY, String(visits));
-    } catch (error) {}
-
-    showGreeting(true);
-  } else {
-    greeting.textContent = "✨ Welcome to Anantam! ✨";
-    message.textContent = "I'm Navya! What should I call you, little explorer?";
-    form.hidden = false;
-    change.hidden = true;
-  }
-
-  submit.addEventListener("click", saveName);
-
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") saveName();
-  });
-
-  change.addEventListener("click", () => {
-    input.value = visitorName;
-    form.hidden = false;
-    change.hidden = true;
-    message.textContent = "What would you like me to call you? 💜";
-    input.focus();
-  });
-
-  function saveName() {
-    const name = input.value.trim().replace(/\s+/g, " ");
-
-    if (!name) {
-      message.textContent = "Tell me your name first, little explorer! ✨";
-      input.focus();
-      return;
-    }
-
-    if (name.length > 24) return;
-
-    visitorName = name;
-    visits = Math.max(visits, 0) + 1;
-
-    try {
-      localStorage.setItem(NAME_KEY, visitorName);
-      localStorage.setItem(VISIT_KEY, String(visits));
-    } catch (error) {
-      // The greeting still works, but may not persist after this visit.
-    }
-
-    showGreeting(false);
-  }
 })();

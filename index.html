@@ -13,6 +13,15 @@
 </head>
 
 <body>
+    <!-- Name gate is applied before the main experience paints on a first visit. -->
+    <script>
+      (function () {
+        try {
+          var savedName = localStorage.getItem('anantamVisitorNameV1') || localStorage.getItem('anantamVisitorName');
+          if (!savedName || !savedName.trim()) document.body.classList.add('name-gate');
+        } catch (_) { document.body.classList.add('name-gate'); }
+      })();
+    </script>
 
     <!-- CINEMATIC INTRO (driven by anantam-cinema.js; skippable) -->
     <div id="intro" role="dialog" aria-label="Opening sequence" hidden>
