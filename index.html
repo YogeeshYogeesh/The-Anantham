@@ -12,6 +12,27 @@
 </head>
 
 <body>
+    <div id="navyaWelcome" class="navya-welcome">
+  <h2 id="navyaGreeting">✨ Welcome to Anantam! ✨</h2>
+  <p id="navyaMessage">May I know your name, little explorer?</p>
+
+  <div id="navyaNameForm">
+    <input
+      id="navyaNameInput"
+      type="text"
+      maxlength="24"
+      placeholder="Enter your name..."
+      autocomplete="given-name"
+    />
+    <button id="navyaNameButton" type="button">
+      Meet Navya ✨
+    </button>
+  </div>
+
+  <button id="navyaChangeName" type="button" hidden>
+    Change my name
+  </button>
+</div>
 
     <div class="stars" aria-hidden="true"></div>
 
@@ -46,11 +67,8 @@
                 🎵 Music off
             </button>
 
-            <button id="flashBtn"
-                    class="small-btn"
-                    title="Toggle magical flashlight">
-                🔦 Light off
-            </button>
+            <button id="flashBtn" class="small-btn" title="Toggle magical flashlight">🔦 Light off</button>
+            <button id="chaosBtn" class="small-btn" type="button" aria-pressed="false" title="Toggle Responsive Chaos Mode">🌈 Chaos +5 pts</button>
 
         </div>
 
@@ -69,6 +87,7 @@
                 <img id="navya"
                      src="navya-reference.jpeg"
                      alt="Navya, wearing a royal blue magical gown">
+                <canvas id="navya3DCanvas" aria-label="Interactive 3D model of Navya" hidden></canvas>
 
                 <div class="eye eye-left">
                     <i></i>
@@ -83,6 +102,7 @@
             <div class="nameplate">
 
                 <span>YOUR GUIDE THROUGH ANANTAM</span>
+                <button id="navya3DToggle" class="small-btn navya-3d-toggle" type="button" aria-pressed="false">✨ Meet Navya in 3D</button>
 
                 <h2>
                     Navya <span>✦</span>
@@ -255,6 +275,15 @@
                     <button type="button" id="mysteryBtn" class="hub-card">
                         <span aria-hidden="true">🔐</span><strong>Forbidden Mystery</strong><small>Solve the rune riddle</small>
                     </button>
+                    <button type="button" id="guestbookBtn" class="hub-card">
+                        <span aria-hidden="true">💌</span><strong>Dream Guestbook</strong><small>Leave a wish or message</small>
+                    </button>
+                    <button type="button" id="navyaChatBtn" class="hub-card">
+                        <span aria-hidden="true">💬</span><strong>Ask Navya</strong><small>17 feature questions</small>
+                    </button>
+                    <button type="button" id="prayerBtn" class="hub-card prayer-card">
+                        <span aria-hidden="true">🙏</span><strong>Prayer to Anantam</strong><small>Share a heartfelt wish</small>
+                    </button>
                 </div>
                 <p id="worldStatus" class="world-status" aria-live="polite">✧ The ancient magic is awake.</p>
             </section>
@@ -277,10 +306,8 @@
 
     <!-- EXISTING SECRET MESSAGE AREA -->
 
-    <div id="secret"
-         class="secret"
-         aria-live="polite">
-    </div>
+    <div id="secret" class="secret" aria-live="polite"></div>
+    <div id="sparkleCursor" aria-hidden="true"></div>
 
 
     <!-- EXISTING FLASHLIGHT -->
@@ -317,9 +344,11 @@
     </div>
 
 
-    <!-- EXISTING JAVASCRIPT -->
-
+    <!-- Three.js powers Navya's optional 3D model only; all other characters stay unchanged. -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
     <script src="script.js"></script>
+    <script src="navya-3d.js"></script>
+    <script src="anantam-effects.js"></script>
 
 
     <!-- MAGICAL BACKGROUND MUSIC -->

@@ -45,7 +45,7 @@ const scenes = [
         eyebrow: 'CHAPTER III · THE SWORD BEARER',
         title: 'The hero named <em>Nandhan</em>',
         text: 'Nandhan is the only one who can wield the Sword of Anantam. When the time comes to face Vritra, his courage and the ancient sword may be the world’s last hope.',
-        navya: 'N-Nandhan? He is the only one who can wield the Sword of Anantam. I trust his courage... and maybe I am blushing a little. Please do not tell him!',
+        navya: 'Nandhan oh! nandhan He is the only one who can wield the Sword of Anantam. I trust his courage... and maybe I am blushing a little. Please do not tell him!',
         caption: 'THE ONLY ONE WHO CAN WIELD THE SWORD',
         img: 'nandhan.png',
         mood: 'Shy, blushing, and hopeful',
@@ -75,6 +75,42 @@ const scenes = [
         mood: 'Brave, excited, and watchful',
         expr: 'normal',
         time: 11000
+    },
+    {
+        chapter: 'THE RELICS AWAKEN',
+        eyebrow: 'CHAPTER VI · THREE PROMISES',
+        title: 'A little light in every <em>relic</em>',
+        text: 'The Lotus, Diamond, and Key are more than objects on an old map. Each carries a different promise: compassion, clarity, and the courage to open a new path. As the relics draw closer together, faint lines of light begin to connect them, as though Anantam itself is remembering an ancient song. Navya studies the map carefully, knowing that haste could hide a clue that patience would reveal.',
+        navya: 'Oh! Look at them sparkle! The Lotus reminds us to be kind, the Diamond helps us see clearly, and the Key says we can be brave even when a door is new. Let’s keep them safe, okay?',
+        caption: 'THREE RELICS · THREE PROMISES',
+        img: 'navya-praying.png',
+        mood: 'Delighted, thoughtful, and hopeful',
+        expr: 'blush',
+        time: 13000
+    },
+    {
+        chapter: 'THE GATE OF ANANTAM',
+        eyebrow: 'CHAPTER VII · A DOOR OF STARS',
+        title: 'The gate remembers its <em>keepers</em>',
+        text: 'When the three relics are brought together, their symbols form a pattern that matches the markings around the Gate of Anantam. The stone does not move at once. First, a soft hum rises beneath the ground; then tiny lights appear along the carvings, one after another. The gate seems to be asking for more than strength. It asks its visitors to remember why the world deserves to be protected. Beyond it lies the next part of the journey, and the answer cannot be rushed.',
+        navya: 'It’s opening… slowly! I think the gate wants us to remember what we’re protecting: every little light, every friend, every dream. Stay close, traveller. We’ll take the next step together.',
+        caption: 'THE GATE GLOWS WITH OLD MAGIC',
+        img: 'navya-determined.png',
+        mood: 'Amazed, brave, and gentle',
+        expr: 'normal',
+        time: 14000
+    },
+    {
+        chapter: 'A NEW BEGINNING',
+        eyebrow: 'CHAPTER VIII · THE STORY CONTINUES',
+        title: 'The first page of what comes <em>next</em>',
+        text: 'The path beyond the gate is quiet, filled with floating motes of light and the sound of leaves moving in a breeze no one can feel. Navya knows that Vritra’s threat has not vanished, and Nandhan’s part in the prophecy is still ahead. Yet the journey has changed them: every clue has taught patience, every companion has offered a reason to hope, and every small act of courage has made the darkness feel less enormous. This is not the end of the legend. It is the page where the next chapter begins.',
+        navya: 'We haven’t finished our adventure—not even close! There are more secrets to understand, more friends to meet, and so many tiny wonders waiting for us. Thank you for turning the page with me. Shall we keep exploring?',
+        caption: 'THE NEXT CHAPTER WAITS',
+        img: 'navya-loving.png',
+        mood: 'Sweet, excited, and full of wonder',
+        expr: 'blush',
+        time: 15000
     }
 ];
 
@@ -126,7 +162,7 @@ function chooseNavyaVoice() {
     const voices = speechSynthesis.getVoices();
 
     return voices.find(v =>
-        /zira|samantha|aria|jenny|libby|sonia|eva/i.test(v.name) &&
+        /samantha|aria|jenny|zira|libby|sonia|eva|tessa|joanna|karen|moira|fiona|google uk english female/i.test(v.name) &&
         /^en(-|$)/i.test(v.lang)
     ) ||
     voices.find(v => /^en(-|$)/i.test(v.lang)) ||
@@ -142,8 +178,8 @@ function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
 
     utterance.voice = chooseNavyaVoice();
-    utterance.rate = 0.86;
-    utterance.pitch = 1.48;
+    utterance.rate = 0.93;
+    utterance.pitch = 1.62;
     utterance.volume = 1;
 
     speechSynthesis.speak(utterance);
@@ -185,7 +221,11 @@ function showScene(index) {
     $('title').innerHTML = s.title;
 
     typeText($('storyText'), s.text, 22);
-    typeText($('navyaLine'), s.navya, 27);
+    const rememberedName = window.getAnantamVisitorName ? window.getAnantamVisitorName() : '';
+    const personalizedNavyaLine = rememberedName
+        ? s.navya.replace(/\btraveller\b/ig, rememberedName).replace(/\blittle explorer\b/ig, rememberedName)
+        : s.navya;
+    typeText($('navyaLine'), personalizedNavyaLine, 27);
 
     $('navyaMood').textContent = s.mood;
     $('artCaption').textContent = s.caption;
@@ -289,13 +329,18 @@ $('soundBtn').addEventListener('click', () => {
 // ================================================
 
 document.addEventListener('pointermove', e => {
-    const dx = (e.clientX / window.innerWidth - 0.5) * 8;
-    const dy = (e.clientY / window.innerHeight - 0.5) * 5;
-
-    document.querySelectorAll('.eye i').forEach(p => {
-        p.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
+    const nx = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+    const ny = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+    const dx = nx * 4, dy = ny * 2.5;
+    document.querySelectorAll('.eye i').forEach(p => { p.style.transform = `translate(${dx}px, ${dy}px)`; });
+    const wrap = document.querySelector('.character-wrap');
+    const portrait = document.getElementById('navya');
+    if (wrap && portrait && !wrap.classList.contains('model-mode')) {
+      portrait.style.setProperty('--look-x', `${nx * 1.3}deg`);
+      portrait.style.setProperty('--look-y', `${ny * -1.1}deg`);
+    }
 });
+document.addEventListener('pointerleave', () => { document.querySelectorAll('.eye i').forEach(p => p.style.transform='translate(0,0)'); });
 
 
 // ================================================
@@ -742,22 +787,18 @@ $('mapBtn').addEventListener('click', renderDreamMap);
 // ================================================
 
 const bookPages = [
-    {
-        title: 'Page I · The First Light',
-        text: 'Long ago, the energy of Anantam connected every living thing and protected peace across the world.'
-    },
-    {
-        title: 'Page II · The Chosen Guide',
-        text: 'Navya, crowned in violet gems and carrying a star wand, sets out to protect the light she loves.'
-    },
-    {
-        title: 'Page III · The Sword Bearer',
-        text: 'Nandhan is the only one able to wield the Sword of Anantam. Navya believes he may help save their world.'
-    },
-    {
-        title: 'Page IV · The Shadow',
-        text: 'Vritra threatens the peace. The Lotus, Diamond, and Key must be found to open the Gate and continue the search for Neelamani.'
-    }
+    { title: 'Page I · The First Light', text: 'Long ago, the energy of Anantam connected every living thing. It moved through forests, rivers, stars, and the hearts of people, helping the world remain in balance. The light was not owned by one person; it was a promise shared by all who cared for the world.' },
+    { title: 'Page II · Meet Navya', text: 'Navya wears a royal blue gown, a crown lit by violet gems, and carries a little star wand. Her magic is beautiful, but her most important strength is her willingness to keep going when she feels uncertain. She hopes to protect the light without losing the kindness that makes it worth protecting.' },
+    { title: 'Page III · A Shadow Named Vritra', text: 'A shadow called Vritra threatens the balance of Anantam. The danger is serious, but fear alone cannot solve it. The prophecy points toward the ancient Neelamani and the Sword of Anantam, suggesting that the world will need both wisdom and courage.' },
+    { title: 'Page IV · Nandhan and the Sword', text: 'Nandhan is the only one able to wield the Sword of Anantam. His role is important, but no hero should have to carry a whole world alone. Navya trusts his courage and hopes that their different strengths will help them face what is coming.' },
+    { title: 'Page V · The Map of Three Relics', text: 'The map shows three signs: the Lotus, the Diamond, and the Key. Each relic is a clue and a promise. The Lotus stands for compassion, the Diamond for clear sight, and the Key for courage to open a path. Finding them means paying attention to the world instead of rushing past its small details.' },
+    { title: 'Page VI · The Neelamani Quest', text: 'The quest is not simply a race to gather treasures. Every step asks Navya and her companions to be patient, brave, and thoughtful. The Neelamani must be found, and the relics help lead the way toward the Gate of Anantam. Even a quiet clue may matter.' },
+    { title: 'Page VII · The Gate Remembers', text: 'When the three relics are brought together, their symbols echo the markings around the ancient gate. The stone answers with a gentle hum and tiny lights. It seems to ask its visitors to remember why they came: not for glory alone, but to protect the world and the people who call it home.' },
+    { title: 'Page VIII · A World Full of Little Wonders', text: 'Anantam is made of more than prophecies and battles. It is also the soft rustle of leaves, a friend’s reassuring words, a light in a window, and the courage to try again. These little wonders help Navya remember what she is fighting for when the road feels difficult.' },
+    { title: 'Page IX · The Story Continues', text: 'Beyond the gate, the path glows with drifting motes of light. Vritra’s threat has not vanished, and Nandhan’s part in the prophecy is still ahead. But the journey has taught its travellers that hope grows through kindness, curiosity, and courage. This is not the end of the legend—it is the beginning of the next page.' },
+    { title: 'Page X · A Wish for the Traveller', text: 'Dear traveller, may you carry a little of Anantam’s light with you. Be curious when a mystery appears, gentle when someone needs help, and brave enough to take one small step at a time. The world of this story keeps growing whenever someone chooses to explore it with an open heart.' },
+    { title: 'Page XI · The Whispering Grove', text: 'Beyond the Gate, Navya discovers a grove where the leaves hold tiny echoes of forgotten promises. The trees do not reveal the future; they remind visitors of the kind things they have already done. Navya listens quietly, learning that protecting Anantam means noticing small needs as carefully as great dangers. A silver trail appears between the roots, pointing toward a place where the Neelamani may answer one question—but only if the question is asked with honesty.' },
+    { title: 'Page XII · The Star-Wand Promise', text: 'That evening, Navya rests beneath a sky full of violet stars. Her wand glimmers, not because every wish can instantly come true, but because hope can help people choose their next brave step. She makes a promise to use her magic thoughtfully, to ask for help when a problem is too large, and to keep listening to the people she hopes to protect. Somewhere beyond the grove, Vritra’s shadow still moves. The next part of the legend will ask for courage, patience, friendship, and a clear heart.' }
 ];
 
 let bookIndex = 0;
@@ -1266,3 +1307,272 @@ $('mysteryBtn').addEventListener('click', renderForbiddenMystery);
 // Start the ambient world according to the saved preference.
 setWorldAwake(worldAwake);
 checkAnantamAchievements();
+
+
+// ================================================
+// TIER 3: GUESTBOOK, STORY GUIDE CHAT, PRAYER & SPARKLE CURSOR
+// ================================================
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function renderGuestbook() {
+    let entries = safeRead('anantamDreamGuestbookV1', []);
+    if (!Array.isArray(entries)) entries = [];
+    const entryHTML = entries.slice().reverse().map(e => `<article class="dream-entry"><strong>${escapeHTML(e.name || 'A traveller')} <span>✦</span></strong><p>${escapeHTML(e.message)}</p><small>${escapeHTML(e.date || 'A wish from Anantam')}</small></article>`).join('');
+    openModal('Dream Guestbook', 'LEAVE A LITTLE LIGHT', `
+      <div class="feature-guide"><strong>💌 How to use the guestbook</strong><ol><li>Choose a nickname (you do not need to use your real name).</li><li>Write a kind message or a dream wish.</li><li>Press “Leave my message” to add it to this guestbook.</li></ol><p><strong>Privacy note:</strong> this version saves entries in this browser only. It is not a shared online guestbook because no server is connected.</p></div>
+      <form id="dreamGuestForm" class="feature-form"><label for="dreamGuestName">Nickname (optional)</label><input id="dreamGuestName" maxlength="32" placeholder="A traveller of Anantam"><label for="dreamGuestMessage">Your message or dream wish</label><textarea id="dreamGuestMessage" maxlength="500" required placeholder="I wish for… or Dear Navya…"></textarea><button class="primary" type="submit">💌 Leave my message</button><p id="guestFeedback" aria-live="polite"></p></form>
+      <h3 class="feature-subtitle">Messages on this device (${entries.length})</h3><div class="dream-entries">${entryHTML || '<p class="quiet-note">The guestbook is waiting for its first little note. You can be the first traveller!</p>'}</div>`);
+    $('dreamGuestForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = $('dreamGuestName').value.trim().slice(0,32) || 'A traveller';
+      const message = $('dreamGuestMessage').value.trim();
+      if (!message) return;
+      const latest = safeRead('anantamDreamGuestbookV1', []);
+      const next = Array.isArray(latest) ? latest : [];
+      next.push({name, message:message.slice(0,500), date:new Date().toLocaleDateString()});
+      safeWrite('anantamDreamGuestbookV1', next.slice(-50));
+      renderGuestbook();
+      const feedback = $('guestFeedback'); if (feedback) feedback.textContent = '✨ Your note is saved in this browser. Thank you for sharing a little light!';
+    });
+}
+function navyaStoryAnswer(question) {
+    const q = question.toLowerCase();
+    const answers = [
+      [/who is navya|about navya|navya look|what does navya wear/, 'I’m Navya! I wear a royal-blue gown with purple gems, a crown, and I carry a star wand. I want to protect Anantam with courage and kindness.'],
+      [/vritra|villain|shadow|threat/, 'Vritra is the shadow threatening Anantam’s balance. The story says the danger is real, but the heroes will need wisdom and courage—not fear alone—to face it.'],
+      [/nandhan|sword|who can wield/, 'Nandhan is the only one who can wield the Sword of Anantam. His courage is important, and the story hints that he and Navya must rely on their different strengths.'],
+      [/neelamani|blue gem|ancient gem/, 'The Neelamani is an ancient treasure connected to the world’s balance and the prophecy. The quest is still unfolding, so the story has not revealed every detail yet.'],
+      [/lotus|diamond|key|three relic/, 'The three relics are the Lotus, the Diamond, and the Key. In our storybook, the Lotus represents compassion, the Diamond clarity, and the Key the courage to open a new path.'],
+      [/gate|door|what happens next|ending|finished|end of story/, 'The Gate has begun to open, but this is not the ending. The next pages lead into the Whispering Grove and the Star-Wand Promise, while Vritra’s threat remains unresolved.'],
+      [/anantam|what is the world|ancient energy|magic/, 'Anantam is an ancient energy that connects living things and helps keep the world in balance. Its light is a promise shared by everyone who cares for the world.'],
+      [/wish|prayer|granted/, 'In the story, Anantam can hear a heartfelt wish as a symbol of hope. I can’t promise real-world wishes will magically come true, but we can celebrate your wish and think about one small step toward it.'],
+      [/story|storybook|chapter|page/, 'You can read the storybook using the 📖 Storybook button. It now includes twelve pages, from the First Light through the new Whispering Grove and Star-Wand Promise pages.'],
+      [/why|how|explain|doubt|question/, 'I’ll do my best to explain what the story actually says. If a detail has not been revealed yet, I’ll tell you it’s still a mystery instead of making up a canon answer.']
+    ];
+    const match = answers.find(([pattern]) => pattern.some(re => re.test(q)));
+    return match ? match[1] : 'That detail hasn’t been clearly explained in the story pages I know yet, and I don’t want to invent an answer and confuse the legend. Try asking about Navya, Vritra, Nandhan, the Sword, the Neelamani, the three relics, or the Gate.';
+}
+function renderNavyaChat() {
+    openModal('Ask Navya', 'A STORY GUIDE WHO ANSWERS GENTLY', `<div class="feature-guide"><strong>💬 Ask anything about the story</strong><p>Ask about characters, the prophecy, the relics, or what a chapter means. This version uses a story-grounded guide with prepared answers; it is not connected to a live AI service, so it will clearly say when a detail is unknown.</p></div><div id="navyaChatLog" class="navya-chat-log" aria-live="polite"><div class="chat-bubble navya-bubble">Hi hi, traveller! 💜 Ask me a question about Anantam and I’ll help explain what the story tells us.</div></div><form id="navyaChatForm" class="feature-form chat-form"><label for="navyaChatInput">Your question</label><input id="navyaChatInput" maxlength="300" required placeholder="Why does Nandhan need the sword?"><button class="primary" type="submit">Ask Navya ✨</button></form>`);
+    $('navyaChatForm').addEventListener('submit', e => {
+      e.preventDefault(); const input = $('navyaChatInput'); const question = input.value.trim(); if (!question) return;
+      const log = $('navyaChatLog'); const user = document.createElement('div'); user.className = 'chat-bubble user-bubble'; user.textContent = question; log.appendChild(user);
+      const reply = document.createElement('div'); reply.className = 'chat-bubble navya-bubble'; reply.textContent = navyaStoryAnswer(question); log.appendChild(reply); input.value = ''; log.scrollTop = log.scrollHeight;
+    });
+}
+function renderPrayer() {
+    openModal('A Prayer to Anantam', 'A QUIET PLACE FOR YOUR WISH', `<div class="prayer-intro">🙏 <p>Take a small breath, think of something meaningful, and write your wish below. In the story, this ritual is a way to hold hope close. It cannot guarantee real-world events, but your wish deserves kindness.</p></div><form id="prayerForm" class="feature-form"><label for="prayerWish">What would you like to wish for?</label><textarea id="prayerWish" maxlength="500" required placeholder="Dear Anantam, I wish for…"></textarea><button class="primary" type="submit">✨ Send my wish to Anantam</button></form><div id="prayerResult" class="prayer-result" hidden aria-live="polite"></div>`);
+    $('prayerForm').addEventListener('submit', e => {
+      e.preventDefault(); const wish = $('prayerWish').value.trim(); if (!wish) return;
+      safeWrite('anantamPrayerWishesV1', [...(Array.isArray(safeRead('anantamPrayerWishesV1', [])) ? safeRead('anantamPrayerWishesV1', []) : []), {wish:wish.slice(0,500), date:new Date().toISOString()}].slice(-20));
+      const result = $('prayerResult'); result.hidden = false; result.innerHTML = `<div class="wish-stars">✦ ✧ ✦</div><h3>Your wish has been heard in Anantam 💜</h3><p>${escapeHTML(wish)}</p><p>May hope stay beside you. If this wish is something you can work toward, may you find one small, kind step to begin.</p><small>This is a magical story moment, not a promise that real-world events will change.</small>`;
+      $('prayerForm').hidden = true;
+    });
+}
+$('guestbookBtn')?.addEventListener('click', renderGuestbook);
+$('navyaChatBtn')?.addEventListener('click', renderFeatureFAQ);
+$('prayerBtn')?.addEventListener('click', renderPrayer);
+(function sparkleCursor() {
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+    let last = 0; const colors = ['#f7dcff','#c5a4ff','#ffe7a4','#9fe8ff'];
+    document.addEventListener('pointermove', e => {
+      const now = performance.now(); if (now - last < 35) return; last = now;
+      const dot = document.createElement('span'); dot.className = 'cursor-sparkle'; dot.textContent = ['✦','✧','⋆','·'][Math.floor(Math.random()*4)];
+      dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px'; dot.style.color = colors[Math.floor(Math.random()*colors.length)];
+      $('sparkleCursor')?.appendChild(dot); setTimeout(() => dot.remove(), 850);
+    });
+})();
+
+
+// ================================================
+// NAVYA'S OFFLINE 17-QUESTION FEATURE GUIDE
+// ================================================
+function renderFeatureFAQ() {
+  const faqs = [
+    ['What can I do on this website?','Explore the storybook, map, quests, mini-game, magical eggs, interactive effects, guestbook, and Prayer to Anantam. Try the buttons and follow each feature’s instructions.'],
+    ['How do I read the story chapters?','Use the Storybook button and chapter controls to move through the story. Read in order to follow the adventure.'],
+    ['How do I listen to narration?','Use the narration button near the top of the page to turn spoken narration on or off. Your browser must support speech synthesis.'],
+    ['What does Day and Night mode do?','Use the Day/Night button to switch the website’s atmosphere between a brighter look and a magical night look.'],
+    ['How do I use the flashlight?','Tap the flashlight button to toggle the light effect. Move your pointer or finger to explore the illuminated area where supported.'],
+    ['How do I use the adventure map?','Open Adventure Map to see the journey’s locations and available discoveries. Choose a location or follow the clues shown in the map.'],
+    ['What are quests and side quests?','Open the Quest Journal to review the available tasks and follow their instructions. Some discoveries may unlock as you progress.'],
+    ['What is the inventory for?','The Inventory is a place to review collected relics and rewards recorded by the adventure. Discover items as you explore.'],
+    ['Where are the three magical eggs?','Reach the final-chapter egg hunt and select the three egg cards to discover them. Follow the on-screen status to see your progress.'],
+    ['How do I find the Forbidden Chapter?','Explore the Forbidden Mystery feature and look for the rune riddle or clues. Follow the hints shown on the page rather than guessing randomly.'],
+    ['How do I switch Navya to 3D?','Use “Meet Navya in 3D” beneath her portrait. In 3D mode, drag across the model to rotate it; use the same button to return to the portrait.'],
+    ['How do I play the mini-game?','Choose “Catch the dreams,” read the instructions shown in the game, and tap or click the targets to play.'],
+    ['How do I leave a guestbook message?','Open Dream Guestbook, choose an optional nickname, write your message, and press “Leave my message.” This version stores entries in the current browser only.'],
+    ['What is Prayer to Anantam?','Write a wish and send it to see a magical story moment. It is a symbolic experience and cannot guarantee real-world wishes will come true.'],
+    ['Why do sparkles follow my cursor?','The sparkle trail is a decorative effect that adds a little magic while you move your pointer. Touch devices may not show the same trail.'],
+    ['Can I use Anantam on a phone or tablet?','Yes, the layout adapts to smaller screens. Some effects and performance depend on your device and browser; use touch-friendly controls.'],
+    ['What should I do if a feature does not work?','Refresh the page and try an updated browser. 3D mode needs WebGL and may need an internet connection to load Three.js. If it still fails, tell the site creator which control did not work.']
+  ];
+  const items = faqs.map((f,i)=>`<button class="faq-question" type="button" aria-expanded="${i===0}" data-faq="${i}"><span>${String(i+1).padStart(2,'0')} · ${escapeHTML(f[0])}</span><span aria-hidden="true">${i===0?'−':'+'}</span></button><div class="faq-answer" data-answer="${i}" ${i===0?'':'hidden'}><p>${escapeHTML(f[1])}</p><button type="button" class="small-btn faq-speak" data-speak="${i}">🔊 Listen to Navya</button></div>`).join('');
+  openModal('Ask Navya', '17 QUICK ANSWERS ABOUT WEBSITE FEATURES', `<div class="feature-guide"><strong>💙 Hello, explorer!</strong><p>Choose a question to learn how to use a feature. These answers work offline and do not use an AI API.</p></div><div class="feature-faq" id="featureFaq">${items}</div>`);
+  const root = $('featureFaq');
+  root.addEventListener('click', e => {
+    const q = e.target.closest('[data-faq]');
+    if (q) { const i=q.dataset.faq; root.querySelectorAll('[data-answer]').forEach(a=>a.hidden=a.dataset.answer!==i); root.querySelectorAll('[data-faq]').forEach(b=>{const on=b.dataset.faq===i;b.setAttribute('aria-expanded',String(on));b.lastElementChild.textContent=on?'−':'+';}); return; }
+    const speakBtn=e.target.closest('[data-speak]'); if(speakBtn){ const f=faqs[Number(speakBtn.dataset.speak)]; if(!f||!('speechSynthesis' in window)){speakBtn.textContent='🔇 Speech unavailable';return;} speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(f[1]); u.rate=.92; u.pitch=1.12; u.lang='en-US'; speechSynthesis.speak(u); }
+  });
+}
+
+// Responsive Chaos Mode: playful, optional effects with reduced-motion and touch support.
+(function responsiveChaosMode(){
+  const btn=$('chaosBtn'); if(!btn) return;
+  btn.addEventListener('click',()=>{const on=document.body.classList.toggle('chaos-mode');btn.setAttribute('aria-pressed',String(on));btn.textContent=on?'🌈 Chaos ON · +5 pts':'🌈 Chaos +5 pts';const mood=$('navyaMood');if(mood)mood.textContent=on?'Playfully chaotic and full of sparkle':'Curious and ready for the journey';});
+})();
+function getNavyaGreeting() {
+  const key = "anantamVisitMemory";
+  const hasVisited = localStorage.getItem(key);
+
+  if (hasVisited) {
+    return "You're back, little explorer! 💙 Ready for another adventure?";
+  }
+
+  localStorage.setItem(key, "visited");
+  return "Welcome, little explorer! ✨ A magical adventure awaits!";
+}
+
+function showNavyaGreeting() {
+  const greeting = getNavyaGreeting();
+
+  // Replace this with your existing Navya dialogue element.
+  const dialogue = document.querySelector("#navyaDialogue");
+
+  if (dialogue) {
+    dialogue.textContent = greeting;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", showNavyaGreeting);
+(() => {
+  const NAME_KEY = "anantamVisitorName";
+  const VISIT_KEY = "anantamVisitCount";
+
+  const greeting = document.getElementById("navyaGreeting");
+  const message = document.getElementById("navyaMessage");
+  const form = document.getElementById("navyaNameForm");
+  const input = document.getElementById("navyaNameInput");
+  const submit = document.getElementById("navyaNameButton");
+  const change = document.getElementById("navyaChangeName");
+
+  if (!greeting || !message || !form || !input || !submit || !change) {
+    return;
+  }
+
+  let visitorName = "";
+  let visits = 0;
+
+  try {
+    visitorName = localStorage.getItem(NAME_KEY) || "";
+    visits = Number(localStorage.getItem(VISIT_KEY)) || 0;
+  } catch (error) {
+    // The feature still works for this visit if storage is unavailable.
+  }
+
+  function showGreeting(isReturning) {
+    greeting.textContent = `✨ Welcome${visitorName ? ", " + visitorName : ""}! ✨`;
+
+    message.textContent = isReturning
+      ? `You're back! 💙 It's lovely to see you again. Ready for another Anantam adventure?`
+      : `I'm Navya! 💙 I'm so happy you're here. Let's explore Anantam together!`;
+
+    form.hidden = true;
+    change.hidden = false;
+  }
+
+  if (visitorName) {
+    visits += 1;
+
+    try {
+      localStorage.setItem(VISIT_KEY, String(visits));
+    } catch (error) {}
+
+    showGreeting(true);
+  } else {
+    greeting.textContent = "✨ Welcome to Anantam! ✨";
+    message.textContent = "I'm Navya! What should I call you, little explorer?";
+    form.hidden = false;
+    change.hidden = true;
+  }
+
+  submit.addEventListener("click", saveName);
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") saveName();
+  });
+
+  change.addEventListener("click", () => {
+    input.value = visitorName;
+    form.hidden = false;
+    change.hidden = true;
+    message.textContent = "What would you like me to call you? 💜";
+    input.focus();
+  });
+
+  function saveName() {
+    const name = input.value.trim().replace(/\s+/g, " ");
+
+    if (!name) {
+      message.textContent = "Tell me your name first, little explorer! ✨";
+      input.focus();
+      return;
+    }
+
+    if (name.length > 24) return;
+
+    visitorName = name;
+    visits = Math.max(visits, 0) + 1;
+
+    try {
+      localStorage.setItem(NAME_KEY, visitorName);
+      localStorage.setItem(VISIT_KEY, String(visits));
+    } catch (error) {
+      // The greeting still works, but may not persist after this visit.
+    }
+
+    showGreeting(false);
+  }
+})();
+
+
+
+/* NAVYA CURSOR COMPANION: smooth 2D eye tracking + safe touch fallback */
+(() => {
+  const wrap = document.querySelector('.character-wrap');
+  const eyes = [...document.querySelectorAll('.character-wrap .eye i')];
+  if (!wrap || !eyes.length) return;
+
+  let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+  const coarsePointer = () => window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+  function pointAt(clientX, clientY) {
+    if (coarsePointer()) return;
+    const rect = wrap.getBoundingClientRect();
+    // Map cursor position to a restrained, natural pupil offset.
+    targetX = Math.max(-4, Math.min(4, ((clientX - (rect.left + rect.width / 2)) / Math.max(rect.width / 2, 1)) * 4));
+    targetY = Math.max(-3, Math.min(3, ((clientY - (rect.top + rect.height * .34)) / Math.max(rect.height, 1)) * 3));
+  }
+  window.addEventListener('pointermove', e => {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') pointAt(e.clientX, e.clientY);
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { targetX = 0; targetY = 0; });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { targetX = 0; targetY = 0; }
+  });
+  function animateEyes() {
+    currentX += (targetX - currentX) * .14;
+    currentY += (targetY - currentY) * .14;
+    eyes.forEach(eye => { eye.style.translate = `${currentX}px ${currentY}px`; });
+    requestAnimationFrame(animateEyes);
+  }
+  animateEyes();
+})();
+
+/* Personalize the existing story dialogue without replacing the story content. */
+window.getAnantamVisitorName = function () {
+  try { return (localStorage.getItem('anantamVisitorName') || '').trim(); }
+  catch (_) { return ''; }
+};
