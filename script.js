@@ -1538,7 +1538,7 @@ function renderNavyaChat() {
       ["How do I play Catch the Dreams?","Open Catch the Dreams and follow the on-screen instructions. Collect three dream orbs before the timer runs out to complete the mini-game."],
       ["How do I leave a guestbook message?","Open Dream Guestbook, enter a message in the form, and submit it. Avoid including private or sensitive information."],
       ["What is Prayer to Anantam?","Write a wish in the prayer feature to create a small magical story moment. It cannot guarantee that real-world wishes will come true."],
-      ["Can I use Anantam on a phone or tablet?","Yes, the page is designed to adapt to smaller screens. Some effects may be simplified to keep the experience responsive."],
+      ["Can I use Anantam on a phone or tablet?","Yes, the page is designed to adapt to smaller screens. Some effects may be simplified to keep the experience responsive. I suggest to swith destop mode in mobile for better expirence"],
       ["A feature isn't working. What should I try?","Refresh the page, use an up-to-date browser, and check your internet connection for features that load Three.js or other online resources. If it still fails, note which button you used."]
     ];
     const cards = featureFaqs.map((item, i) => `<details class="navya-faq-item"${i === 0 ? ' open' : ''}><summary>${i+1}. ${escapeHTML(item[0])}</summary><div class="navya-faq-answer"><p>${escapeHTML(item[1])}</p><button type="button" class="secondary faq-speak" data-answer="${escapeHTML(item[1])}">🔊 Listen to Navya</button></div></details>`).join('');
