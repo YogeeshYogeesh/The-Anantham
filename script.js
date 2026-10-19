@@ -45,7 +45,7 @@ const scenes = [
         eyebrow: 'CHAPTER III · THE SWORD BEARER',
         title: 'The hero named <em>Nandhan</em>',
         text: 'Nandhan is the only one who can wield the Sword of Anantam. When the time comes to face Vritra, his courage and the ancient sword may be the world’s last hope.',
-        navya: 'Nandhan oh! nandhan He is the only one who can wield the Sword of Anantam. I trust his courage... and maybe I am blushing a little. Please do not tell him!',
+        navya: 'N-Nandhan? He is the only one who can wield the Sword of Anantam. I trust his courage... and maybe I am blushing a little. Please do not tell him!',
         caption: 'THE ONLY ONE WHO CAN WIELD THE SWORD',
         img: 'nandhan.png',
         mood: 'Shy, blushing, and hopeful',
@@ -101,6 +101,19 @@ const scenes = [
         time: 14000
     },
     {
+        chapter: 'THE FORGING OF ANANTAM',
+        eyebrow: 'CHAPTER VIII · THE TWO RELICS BECOME ONE',
+        title: 'When <em>three plus two</em> become one',
+        text: 'At the heart of the ancient gate, Neelamani awakens with a brilliant blue pulse. The Sword of Anantham answers from across the chamber. Their runes shine in harmony, and the two relics rise into the air. Blue cosmic threads spiral between them as their ancient powers recognise one another. The light grows brighter until the relics merge in a single flash, forging a new weapon: the Celestial Sword of Anantam.',
+        navya: 'Look, traveller! Neelamani and the Sword of Anantham are joining their powers. This is no ordinary weapon—it carries the strength of both relics. When Nandhan receives it, he may finally have the power to stand against Vritra!',
+        caption: 'NEELAMANI + THE SWORD OF ANANTHAM — THE CELESTIAL SWORD IS FORGED',
+        img: 'forged-anantam-sword.png',
+        mood: 'Astonished, hopeful, and filled with ancient wonder',
+        expr: 'normal',
+        time: 18000,
+        fusion: true
+    },
+    {
         chapter: 'A NEW BEGINNING',
         eyebrow: 'CHAPTER VIII · THE STORY CONTINUES',
         title: 'The first page of what comes <em>next</em>',
@@ -113,6 +126,123 @@ const scenes = [
         time: 15000
     }
 ];
+
+
+/* ==========================================
+   👑 ANANTAM: REMEMBER THE VISITOR
+   ========================================== */
+
+const ANANTAM_NAME_KEY = "anantamVisitorNameV1";
+const ANANTAM_VISITED_KEY = "anantamHasVisitedV1";
+
+let visitorName = "";
+let isReturningVisitor = false;
+
+try {
+    visitorName = localStorage.getItem(ANANTAM_NAME_KEY) || "";
+    isReturningVisitor =
+        localStorage.getItem(ANANTAM_VISITED_KEY) === "true";
+} catch (error) {
+    console.warn("Visitor memory is unavailable in this browser.");
+}
+
+function updateVisitorNameDisplay() {
+    const display = document.getElementById("visitorNameDisplay");
+
+    if (display) {
+        display.textContent =
+            `👑 ${visitorName || "Little Explorer"}`;
+    }
+}
+
+function personalizeVisitorText(text) {
+    if (typeof text !== "string") return text;
+
+    return text.replace(/\btraveller\b/gi, () =>
+        visitorName || "Little Explorer"
+    );
+}
+
+function saveVisitorName(name) {
+    visitorName = name.trim().slice(0, 24) || "Little Explorer";
+
+    try {
+        localStorage.setItem(ANANTAM_NAME_KEY, visitorName);
+        localStorage.setItem(ANANTAM_VISITED_KEY, "true");
+    } catch (error) {
+        console.warn("Could not save the visitor name.");
+    }
+
+    updateVisitorNameDisplay();
+}
+
+function getNavyaWelcomeMessage() {
+    if (isReturningVisitor) {
+        return `You're back, ${visitorName}! 💙 I’m so happy to see you again. Ready for another adventure?`;
+    }
+
+    if (visitorName === "Little Explorer") {
+        return "Welcome, little explorer! ✨ A magical adventure awaits you!";
+    }
+
+    return `Welcome, ${visitorName}! ✨ A magical adventure awaits you!`;
+}
+
+/* Connect to your EXISTING name-entry form. */
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("navyaNameInput");
+    const submit = document.getElementById("navyaNameButton");
+    const welcome = document.getElementById("navyaWelcome");
+    const greeting = document.getElementById("navyaGreeting");
+    const message = document.getElementById("navyaMessage");
+    const nameForm = document.getElementById("navyaNameForm");
+    const changeButton = document.getElementById("navyaChangeName");
+
+    updateVisitorNameDisplay();
+
+    if (isReturningVisitor && visitorName) {
+        if (greeting) greeting.textContent = `👑 Welcome back, ${visitorName}!`;
+        if (message) message.textContent = getNavyaWelcomeMessage();
+        if (input) input.value = visitorName;
+        if (nameForm) nameForm.hidden = true;
+        if (changeButton) changeButton.hidden = false;
+    }
+
+    if (submit && input) {
+        submit.addEventListener("click", () => {
+            const name = input.value.trim();
+
+            if (!name) {
+                input.focus();
+                input.placeholder = "Please enter your nickname ✨";
+                return;
+            }
+
+            saveVisitorName(name);
+
+            if (greeting) greeting.textContent = `👑 Welcome, ${visitorName}!`;
+            if (message) message.textContent = getNavyaWelcomeMessage();
+            if (nameForm) nameForm.hidden = true;
+            if (changeButton) changeButton.hidden = false;
+
+            isReturningVisitor = true;
+        });
+
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") submit.click();
+        });
+    }
+
+    if (changeButton && input) {
+        changeButton.addEventListener("click", () => {
+            if (nameForm) nameForm.hidden = false;
+            if (input) {
+                input.value = visitorName;
+                input.focus();
+            }
+        });
+    }
+});
 
 let current = 0;
 let paused = false;
@@ -220,13 +350,19 @@ function showScene(index) {
     $('eyebrow').textContent = s.eyebrow;
     $('title').innerHTML = s.title;
 
-    typeText($('storyText'), s.text, 22);
-    const rememberedName = window.getAnantamVisitorName ? window.getAnantamVisitorName() : '';
-    const personalizedNavyaLine = rememberedName
-        ? s.navya.replace(/\btraveller\b/ig, rememberedName).replace(/\blittle explorer\b/ig, rememberedName)
-        : s.navya;
-    typeText($('navyaLine'), personalizedNavyaLine, 27);
+   typeText(
+    $("storyText"),
+    personalizeVisitorText(s.text),
+    22
+);
 
+typeText(
+    $("navyaLine"),
+    personalizeVisitorText(s.navya),
+    27
+);
+
+updateVisitorNameDisplay();
     $('navyaMood').textContent = s.mood;
     $('artCaption').textContent = s.caption;
 
@@ -257,14 +393,29 @@ function showScene(index) {
     }
 
     const featured = $('featured');
+    const fusionStage = $('fusionStage');
+    const artFrame = featured ? featured.closest('.art-frame') : null;
+    const isFusionScene = !!s.fusion;
 
-    featured.classList.add('fade');
-
-    setTimeout(() => {
-        featured.src = s.img;
-        featured.alt = s.caption;
-        featured.classList.remove('fade');
-    }, 260);
+    if (fusionStage) {
+        fusionStage.hidden = !isFusionScene;
+        fusionStage.classList.remove('fusion-play');
+        if (artFrame) artFrame.classList.toggle('is-fusion-scene', isFusionScene);
+        if (isFusionScene) {
+            // Re-trigger the sequence each time visitors enter Scene 9.
+            void fusionStage.offsetWidth;
+            requestAnimationFrame(() => fusionStage.classList.add('fusion-play'));
+        }
+    }
+    if (featured) {
+        featured.classList.toggle('fusion-featured-hidden', isFusionScene);
+        featured.classList.add('fade');
+        setTimeout(() => {
+            featured.src = s.img;
+            featured.alt = s.caption;
+            featured.classList.remove('fade');
+        }, 260);
+    }
 
     if (sound) {
         speak(s.navya);
@@ -278,6 +429,9 @@ function showScene(index) {
             showScene(current + 1);
         }, s.time);
     }
+
+    // Tell the cinema/quest layers which scene is now showing.
+    document.dispatchEvent(new CustomEvent('anantam:scene', { detail: { index: current, scene: s } }));
 }
 
 
@@ -329,18 +483,13 @@ $('soundBtn').addEventListener('click', () => {
 // ================================================
 
 document.addEventListener('pointermove', e => {
-    const nx = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
-    const ny = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
-    const dx = nx * 4, dy = ny * 2.5;
-    document.querySelectorAll('.eye i').forEach(p => { p.style.transform = `translate(${dx}px, ${dy}px)`; });
-    const wrap = document.querySelector('.character-wrap');
-    const portrait = document.getElementById('navya');
-    if (wrap && portrait && !wrap.classList.contains('model-mode')) {
-      portrait.style.setProperty('--look-x', `${nx * 1.3}deg`);
-      portrait.style.setProperty('--look-y', `${ny * -1.1}deg`);
-    }
+    const dx = (e.clientX / window.innerWidth - 0.5) * 8;
+    const dy = (e.clientY / window.innerHeight - 0.5) * 5;
+
+    document.querySelectorAll('.eye i').forEach(p => {
+        p.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
 });
-document.addEventListener('pointerleave', () => { document.querySelectorAll('.eye i').forEach(p => p.style.transform='translate(0,0)'); });
 
 
 // ================================================
@@ -1354,12 +1503,37 @@ function navyaStoryAnswer(question) {
     return match ? match[1] : 'That detail hasn’t been clearly explained in the story pages I know yet, and I don’t want to invent an answer and confuse the legend. Try asking about Navya, Vritra, Nandhan, the Sword, the Neelamani, the three relics, or the Gate.';
 }
 function renderNavyaChat() {
-    openModal('Ask Navya', 'A STORY GUIDE WHO ANSWERS GENTLY', `<div class="feature-guide"><strong>💬 Ask anything about the story</strong><p>Ask about characters, the prophecy, the relics, or what a chapter means. This version uses a story-grounded guide with prepared answers; it is not connected to a live AI service, so it will clearly say when a detail is unknown.</p></div><div id="navyaChatLog" class="navya-chat-log" aria-live="polite"><div class="chat-bubble navya-bubble">Hi hi, traveller! 💜 Ask me a question about Anantam and I’ll help explain what the story tells us.</div></div><form id="navyaChatForm" class="feature-form chat-form"><label for="navyaChatInput">Your question</label><input id="navyaChatInput" maxlength="300" required placeholder="Why does Nandhan need the sword?"><button class="primary" type="submit">Ask Navya ✨</button></form>`);
-    $('navyaChatForm').addEventListener('submit', e => {
-      e.preventDefault(); const input = $('navyaChatInput'); const question = input.value.trim(); if (!question) return;
-      const log = $('navyaChatLog'); const user = document.createElement('div'); user.className = 'chat-bubble user-bubble'; user.textContent = question; log.appendChild(user);
-      const reply = document.createElement('div'); reply.className = 'chat-bubble navya-bubble'; reply.textContent = navyaStoryAnswer(question); log.appendChild(reply); input.value = ''; log.scrollTop = log.scrollHeight;
-    });
+    const featureFaqs = [
+      ["What can I do on this website?","Explore the story, open the storybook, discover secrets, try quests and mini-games, visit the map, and leave a message in the guestbook."],
+      ["How do I read the storybook?","Open Storybook from the feature hub, then use the page controls to move through the story at your own pace."],
+      ["How do I hear the story aloud?","Use the Narration control near the top of the page. Browser voices vary by device, so the exact voice may sound different."],
+      ["How can I control sound or mute the background music?","Use the Sound & Fx  near the top of the page to adjust sound of Music and Effects and Also it will give Subtitles for dialogues ."],
+      ["What does Night Mode do?","Use the day-and-night control to switch the website's atmosphere and explore the story in a different mood."],
+      ["How does the magical flashlight work?","Turn on the Light control to activate the flashlight effect, then move your pointer around the page. Touch devices may show a simpler effect."],
+      ["How do I open the Dream Map?","Choose Dream Map in the feature controls to see the map and the locations available in this version of the adventure."],
+      ["What are quests for?","The Quest Journal explains your current tasks and discoveries. Open it to see the objectives provided by the game."],
+      ["What is the Inventory?","Open Inventory to review the relics and rewards tracked by your adventure."],
+      ["Where are the three magical eggs?","Explore the story and its hidden discoveries, especially the final chapter. Follow the clues presented on the page."],
+      ["How do I find the Forbidden Chapter?","Look for the glowing rune in the story scene or follow the site's secret clues. The Forbidden Chapter page contains its own mystery."],
+      ["How do I view Navya in 3D?","Choose “Meet Navya in 3D” beside her portrait. This view uses a transparent cut-out with a 3D presentation effect; it is not yet a fully sculpted, rigged character."],
+      ["How do I play Catch the Dreams?","Open Catch the Dreams and follow the on-screen instructions. Collect three dream orbs before the timer runs out to complete the mini-game."],
+      ["How do I leave a guestbook message?","Open Dream Guestbook, enter a message in the form, and submit it. Avoid including private or sensitive information."],
+      ["What is Prayer to Anantam?","Write a wish in the prayer feature to create a small magical story moment. It cannot guarantee that real-world wishes will come true."],
+      ["Can I use Anantam on a phone or tablet?","Yes, the page is designed to adapt to smaller screens. Some effects may be simplified to keep the experience responsive."],
+      ["A feature isn't working. What should I try?","Refresh the page, use an up-to-date browser, and check your internet connection for features that load Three.js or other online resources. If it still fails, note which button you used."]
+    ];
+    const cards = featureFaqs.map((item, i) => `<details class="navya-faq-item"${i === 0 ? ' open' : ''}><summary>${i+1}. ${escapeHTML(item[0])}</summary><div class="navya-faq-answer"><p>${escapeHTML(item[1])}</p><button type="button" class="secondary faq-speak" data-answer="${escapeHTML(item[1])}">🔊 Listen to Navya</button></div></details>`).join('');
+    openModal('Ask Navya', '17 QUICK ANSWERS ABOUT WEBSITE FEATURES', `<div class="feature-guide"><strong>Hi hi, explorer! 💙</strong><p>Choose a question below and I'll explain how to use the website. These are prepared answers, so no AI account or API key is needed.</p></div><div class="navya-feature-faq">${cards}</div>`);
+    $('modalBody').querySelectorAll('.faq-speak').forEach(button => button.addEventListener('click', () => {
+      if (!('speechSynthesis' in window)) { button.textContent = 'Speech is not supported in this browser'; return; }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(button.dataset.answer || '');
+      utterance.lang = 'en-US'; utterance.rate = 0.91; utterance.pitch = 1.28;
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v => /female|samantha|zira|aria|jenny|google uk english female/i.test(v.name));
+      if (preferred) utterance.voice = preferred;
+      window.speechSynthesis.speak(utterance);
+    }));
 }
 function renderPrayer() {
     openModal('A Prayer to Anantam', 'A QUIET PLACE FOR YOUR WISH', `<div class="prayer-intro">🙏 <p>Take a small breath, think of something meaningful, and write your wish below. In the story, this ritual is a way to hold hope close. It cannot guarantee real-world events, but your wish deserves kindness.</p></div><form id="prayerForm" class="feature-form"><label for="prayerWish">What would you like to wish for?</label><textarea id="prayerWish" maxlength="500" required placeholder="Dear Anantam, I wish for…"></textarea><button class="primary" type="submit">✨ Send my wish to Anantam</button></form><div id="prayerResult" class="prayer-result" hidden aria-live="polite"></div>`);
@@ -1371,7 +1545,7 @@ function renderPrayer() {
     });
 }
 $('guestbookBtn')?.addEventListener('click', renderGuestbook);
-$('navyaChatBtn')?.addEventListener('click', renderFeatureFAQ);
+$('navyaChatBtn')?.addEventListener('click', renderNavyaChat);
 $('prayerBtn')?.addEventListener('click', renderPrayer);
 (function sparkleCursor() {
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
@@ -1385,68 +1559,33 @@ $('prayerBtn')?.addEventListener('click', renderPrayer);
 })();
 
 
-// ================================================
-// NAVYA'S OFFLINE 17-QUESTION FEATURE GUIDE
-// ================================================
-function renderFeatureFAQ() {
-  const faqs = [
-    ['What can I do on this website?','Explore the storybook, map, quests, mini-game, magical eggs, interactive effects, guestbook, and Prayer to Anantam. Try the buttons and follow each feature’s instructions.'],
-    ['How do I read the story chapters?','Use the Storybook button and chapter controls to move through the story. Read in order to follow the adventure.'],
-    ['How do I listen to narration?','Use the narration button near the top of the page to turn spoken narration on or off. Your browser must support speech synthesis.'],
-    ['What does Day and Night mode do?','Use the Day/Night button to switch the website’s atmosphere between a brighter look and a magical night look.'],
-    ['How do I use the flashlight?','Tap the flashlight button to toggle the light effect. Move your pointer or finger to explore the illuminated area where supported.'],
-    ['How do I use the adventure map?','Open Adventure Map to see the journey’s locations and available discoveries. Choose a location or follow the clues shown in the map.'],
-    ['What are quests and side quests?','Open the Quest Journal to review the available tasks and follow their instructions. Some discoveries may unlock as you progress.'],
-    ['What is the inventory for?','The Inventory is a place to review collected relics and rewards recorded by the adventure. Discover items as you explore.'],
-    ['Where are the three magical eggs?','Reach the final-chapter egg hunt and select the three egg cards to discover them. Follow the on-screen status to see your progress.'],
-    ['How do I find the Forbidden Chapter?','Explore the Forbidden Mystery feature and look for the rune riddle or clues. Follow the hints shown on the page rather than guessing randomly.'],
-    ['How do I switch Navya to 3D?','Use “Meet Navya in 3D” beneath her portrait. In 3D mode, drag across the model to rotate it; use the same button to return to the portrait.'],
-    ['How do I play the mini-game?','Choose “Catch the dreams,” read the instructions shown in the game, and tap or click the targets to play.'],
-    ['How do I leave a guestbook message?','Open Dream Guestbook, choose an optional nickname, write your message, and press “Leave my message.” This version stores entries in the current browser only.'],
-    ['What is Prayer to Anantam?','Write a wish and send it to see a magical story moment. It is a symbolic experience and cannot guarantee real-world wishes will come true.'],
-    ['Why do sparkles follow my cursor?','The sparkle trail is a decorative effect that adds a little magic while you move your pointer. Touch devices may not show the same trail.'],
-    ['Can I use Anantam on a phone or tablet?','Yes, the layout adapts to smaller screens. Some effects and performance depend on your device and browser; use touch-friendly controls.'],
-    ['What should I do if a feature does not work?','Refresh the page and try an updated browser. 3D mode needs WebGL and may need an internet connection to load Three.js. If it still fails, tell the site creator which control did not work.']
-  ];
-  const items = faqs.map((f,i)=>`<button class="faq-question" type="button" aria-expanded="${i===0}" data-faq="${i}"><span>${String(i+1).padStart(2,'0')} · ${escapeHTML(f[0])}</span><span aria-hidden="true">${i===0?'−':'+'}</span></button><div class="faq-answer" data-answer="${i}" ${i===0?'':'hidden'}><p>${escapeHTML(f[1])}</p><button type="button" class="small-btn faq-speak" data-speak="${i}">🔊 Listen to Navya</button></div>`).join('');
-  openModal('Ask Navya', '17 QUICK ANSWERS ABOUT WEBSITE FEATURES', `<div class="feature-guide"><strong>💙 Hello, explorer!</strong><p>Choose a question to learn how to use a feature. These answers work offline and do not use an AI API.</p></div><div class="feature-faq" id="featureFaq">${items}</div>`);
-  const root = $('featureFaq');
-  root.addEventListener('click', e => {
-    const q = e.target.closest('[data-faq]');
-    if (q) { const i=q.dataset.faq; root.querySelectorAll('[data-answer]').forEach(a=>a.hidden=a.dataset.answer!==i); root.querySelectorAll('[data-faq]').forEach(b=>{const on=b.dataset.faq===i;b.setAttribute('aria-expanded',String(on));b.lastElementChild.textContent=on?'−':'+';}); return; }
-    const speakBtn=e.target.closest('[data-speak]'); if(speakBtn){ const f=faqs[Number(speakBtn.dataset.speak)]; if(!f||!('speechSynthesis' in window)){speakBtn.textContent='🔇 Speech unavailable';return;} speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(f[1]); u.rate=.92; u.pitch=1.12; u.lang='en-US'; speechSynthesis.speak(u); }
+// Playful Chaos Mode: an optional decorative layer; it does not change story progress.
+(() => {
+  const button = document.getElementById('chaosModeBtn');
+  if (!button) return;
+  button.addEventListener('click', () => {
+    const enabled = !document.body.classList.contains('chaos-mode');
+    document.body.classList.toggle('chaos-mode', enabled);
+    button.setAttribute('aria-pressed', String(enabled));
+    button.textContent = enabled ? '🌀 Chaos Mode on · +5' : '✨ Chaos Mode +5';
+    button.title = enabled ? 'Turn off playful Chaos Mode' : 'Turn on playful Chaos Mode';
+    let status = document.getElementById('chaosStatus');
+    if (!status) {
+      status = document.createElement('div');
+      status.id = 'chaosStatus';
+      status.className = 'chaos-status';
+      status.setAttribute('aria-live', 'polite');
+      document.body.appendChild(status);
+    }
+    status.textContent = enabled ? '🌀 Chaos Mode awakened! +5 sparkle points for fun.' : '✨ Chaos Mode has settled down.';
+    if (enabled) {
+      try {
+        const current = Number(sessionStorage.getItem('anantamChaosPoints') || 0);
+        sessionStorage.setItem('anantamChaosPoints', String(Math.min(999, current + 5)));
+      } catch (_) {}
+    }
   });
-}
-
-// Responsive Chaos Mode: playful, optional effects with reduced-motion and touch support.
-(function responsiveChaosMode(){
-  const btn=$('chaosBtn'); if(!btn) return;
-  btn.addEventListener('click',()=>{const on=document.body.classList.toggle('chaos-mode');btn.setAttribute('aria-pressed',String(on));btn.textContent=on?'🌈 Chaos ON · +5 pts':'🌈 Chaos +5 pts';const mood=$('navyaMood');if(mood)mood.textContent=on?'Playfully chaotic and full of sparkle':'Curious and ready for the journey';});
 })();
-function getNavyaGreeting() {
-  const key = "anantamVisitMemory";
-  const hasVisited = localStorage.getItem(key);
-
-  if (hasVisited) {
-    return "You're back, little explorer! 💙 Ready for another adventure?";
-  }
-
-  localStorage.setItem(key, "visited");
-  return "Welcome, little explorer! ✨ A magical adventure awaits!";
-}
-
-function showNavyaGreeting() {
-  const greeting = getNavyaGreeting();
-
-  // Replace this with your existing Navya dialogue element.
-  const dialogue = document.querySelector("#navyaDialogue");
-
-  if (dialogue) {
-    dialogue.textContent = greeting;
-  }
-}
-
-document.addEventListener("DOMContentLoaded", showNavyaGreeting);
 (() => {
   const NAME_KEY = "anantamVisitorName";
   const VISIT_KEY = "anantamVisitCount";
@@ -1536,43 +1675,3 @@ document.addEventListener("DOMContentLoaded", showNavyaGreeting);
     showGreeting(false);
   }
 })();
-
-
-
-/* NAVYA CURSOR COMPANION: smooth 2D eye tracking + safe touch fallback */
-(() => {
-  const wrap = document.querySelector('.character-wrap');
-  const eyes = [...document.querySelectorAll('.character-wrap .eye i')];
-  if (!wrap || !eyes.length) return;
-
-  let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-  const coarsePointer = () => window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
-
-  function pointAt(clientX, clientY) {
-    if (coarsePointer()) return;
-    const rect = wrap.getBoundingClientRect();
-    // Map cursor position to a restrained, natural pupil offset.
-    targetX = Math.max(-4, Math.min(4, ((clientX - (rect.left + rect.width / 2)) / Math.max(rect.width / 2, 1)) * 4));
-    targetY = Math.max(-3, Math.min(3, ((clientY - (rect.top + rect.height * .34)) / Math.max(rect.height, 1)) * 3));
-  }
-  window.addEventListener('pointermove', e => {
-    if (e.pointerType === 'mouse' || e.pointerType === 'pen') pointAt(e.clientX, e.clientY);
-  }, { passive: true });
-  document.addEventListener('pointerleave', () => { targetX = 0; targetY = 0; });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { targetX = 0; targetY = 0; }
-  });
-  function animateEyes() {
-    currentX += (targetX - currentX) * .14;
-    currentY += (targetY - currentY) * .14;
-    eyes.forEach(eye => { eye.style.translate = `${currentX}px ${currentY}px`; });
-    requestAnimationFrame(animateEyes);
-  }
-  animateEyes();
-})();
-
-/* Personalize the existing story dialogue without replacing the story content. */
-window.getAnantamVisitorName = function () {
-  try { return (localStorage.getItem('anantamVisitorName') || '').trim(); }
-  catch (_) { return ''; }
-};

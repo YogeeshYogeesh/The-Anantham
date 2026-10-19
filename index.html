@@ -9,10 +9,36 @@
     <title>The Legend of Anantam</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="anantam-cinema.css">
 </head>
 
 <body>
-    <div id="navyaWelcome" class="navya-welcome">
+
+    <!-- CINEMATIC INTRO (driven by anantam-cinema.js; skippable) -->
+    <div id="intro" role="dialog" aria-label="Opening sequence" hidden>
+        <div class="intro-world" aria-hidden="true">
+            <div class="intro-glow"></div>
+            <div class="intro-horizon"></div>
+        </div>
+        <canvas id="introCanvas" aria-hidden="true"></canvas>
+        <div class="intro-pulse" aria-hidden="true"></div>
+        <button id="skipIntro" type="button">Skip intro ⏭</button>
+        <div class="intro-stage">
+            <div class="intro-logo">
+                <span class="il-kicker">THE LEGEND OF</span>
+                <h1 class="il-title">ANANTAM</h1>
+                <span class="il-sub">THE ETERNAL WORLD</span>
+            </div>
+            <div class="intro-navya"><img src="navya-curious.webp" alt="Navya steps out of the light"></div>
+            <div class="intro-cta">
+                <button id="beginBtn" type="button">BEGIN THE LEGEND</button>
+                <span class="intro-hint">PRESS ESC TO SKIP</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="stars" aria-hidden="true"></div>
+     <div id="navyaWelcome" class="navya-welcome">
   <h2 id="navyaGreeting">✨ Welcome to Anantam! ✨</h2>
   <p id="navyaMessage">May I know your name, little explorer?</p>
 
@@ -33,14 +59,15 @@
     Change my name
   </button>
 </div>
-
-    <div class="stars" aria-hidden="true"></div>
-
     <header>
 
-        <div class="brand">
-            ✧ THE LEGEND OF <b>ANANTAM</b>
-        </div>
+       <div class="brand">
+    ✧ THE LEGEND OF <b>ANANTAM</b>
+    <span id="visitorNameDisplay"
+          style="display: block; margin-top: 6px; font-size: 1.0em;">
+        👑 Little Explorer
+    </span>
+</div>
 
         <div class="chapter">
             <span id="chapterNo">01</span> /
@@ -67,8 +94,13 @@
                 🎵 Music off
             </button>
 
-            <button id="flashBtn" class="small-btn" title="Toggle magical flashlight">🔦 Light off</button>
-            <button id="chaosBtn" class="small-btn" type="button" aria-pressed="false" title="Toggle Responsive Chaos Mode">🌈 Chaos +5 pts</button>
+            <button id="chaosModeBtn" class="small-btn" type="button" aria-pressed="false" title="Toggle playful Chaos Mode">✨ Chaos Mode +5</button>
+
+            <button id="flashBtn"
+                    class="small-btn"
+                    title="Toggle magical flashlight">
+                🔦 Light off
+            </button>
 
         </div>
 
@@ -159,6 +191,24 @@
                 <img id="featured"
                      src="navya-reference.jpeg"
                      alt="Story scene illustration">
+
+                <div id="fusionStage" class="fusion-stage" aria-hidden="true" hidden>
+                    <div class="fusion-stars"></div>
+                    <div class="fusion-relic relic-neelamani">
+                        <span class="fusion-label">NEELAMANI</span>
+                        <img src="neelamani-fusion.png" alt="">
+                    </div>
+                    <div class="fusion-relic relic-sword">
+                        <span class="fusion-label">SWORD OF ANANTHAM</span>
+                        <img src="sword-of-anantham-fusion.png" alt="">
+                    </div>
+                    <div class="fusion-core" aria-hidden="true">✦</div>
+                    <div class="fusion-burst" aria-hidden="true"></div>
+                    <div class="fusion-result">
+                        <span class="fusion-label">THE CELESTIAL SWORD</span>
+                        <img src="forged-anantam-sword.png" alt="">
+                    </div>
+                </div>
 
                 <div class="art-caption" id="artCaption">
                     A WORLD HELD BY AN ANCIENT POWER
@@ -279,7 +329,7 @@
                         <span aria-hidden="true">💌</span><strong>Dream Guestbook</strong><small>Leave a wish or message</small>
                     </button>
                     <button type="button" id="navyaChatBtn" class="hub-card">
-                        <span aria-hidden="true">💬</span><strong>Ask Navya</strong><small>17 feature questions</small>
+                        <span aria-hidden="true">💬</span><strong>Ask Navya</strong><small>Story questions answered</small>
                     </button>
                     <button type="button" id="prayerBtn" class="hub-card prayer-card">
                         <span aria-hidden="true">🙏</span><strong>Prayer to Anantam</strong><small>Share a heartfelt wish</small>
@@ -346,9 +396,12 @@
 
     <!-- Three.js powers Navya's optional 3D model only; all other characters stay unchanged. -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="anantam-art.js"></script>
+    <script src="anantam-audio.js"></script>
     <script src="script.js"></script>
     <script src="navya-3d.js"></script>
-    <script src="anantam-effects.js"></script>
+    <script src="anantam-cinema.js"></script>
+    <script src="anantam-quest.js"></script>
 
 
     <!-- MAGICAL BACKGROUND MUSIC -->

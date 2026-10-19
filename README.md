@@ -2,7 +2,7 @@
 
 ## Run the website
 1. Extract this ZIP.
-2. Open `Anantam_Relic_Quest_Mini_Game/anantam_no_assets/index.html` in a modern browser (or open `index.html` inside the extracted `anantam_no_assets` folder).
+2. Open `Anantam_Relic_Quest_Mini_Game/anantam_no_index.html` in a modern browser (or open `index.html` inside the extracted `anantam_no_assets` folder).
 3. The story starts automatically. Use Pause story / Skip ahead if desired.
 
 ## Added features
@@ -69,3 +69,36 @@
 6. Open **Adventure Map**. The Moonlit Garden is open first; collect relics through Catch the Dreams to unlock additional locations.
 
 Progress is stored in the current browser profile when local storage is enabled. Clearing browser site data or using a different browser/device may reset local progress.
+
+
+## Navya 3D and expanded storybook update
+
+This edition adds an optional, procedural Three.js 3D representation of **Navya only**. Use the “Meet Navya in 3D” button beneath her name to switch between the original portrait and the interactive model. The 3D canvas is transparent; drag the model horizontally to rotate it. Other characters and story-scene artwork are not converted to 3D.
+
+Three.js is loaded from jsDelivr, so the 3D mode requires an internet connection. If the library is unavailable, the original portrait remains available. Story chapters VI–VIII expand the story after the original Gate chapter, and the interactive storybook contains ten pages. Narration uses the browser's speech synthesis voice list; voice choice and quality vary by device and browser.
+
+
+## Additional update in this build
+- The **Ask Navya** hub card now opens 17 clickable website-feature FAQ answers instead of a free-text question form. Each answer has an optional browser speech button; no AI API key is required.
+- Added an optional **Chaos Mode (+5)** toggle with gentle visual flourishes and a session-only sparkle-points counter. It does not change saved story progress.
+- Added responsive styling for mobile controls and the FAQ panel, plus reduced-motion consideration.
+- Navya's existing 3D presentation now subtly tilts in response to pointer movement and resets when the pointer leaves. Touch/drag interaction remains supported.
+
+### Important 3D limitation
+The included `navya-3d.js` uses a transparent image plane in a Three.js scene, not a fully sculpted 3D character with a skeleton. The pointer tilt is therefore a gentle whole-portrait effect. True independent eye tracking, head-only tilting, and a full 360-degree back view require a properly modeled and rigged 3D asset (for example, a GLB/GLTF with eye and head bones). The existing portrait and other characters are not replaced.
+
+
+## Cinematic Upgrade (integration build)
+The cinema, quest, audio and art layers are now wired into the site:
+- `index.html` loads `anantam-cinema.css`, `anantam-art.js`, `anantam-audio.js`, `anantam-cinema.js`, `anantam-quest.js`, and contains the opening-sequence markup (BEGIN THE LEGEND + Skip intro / Esc).
+- `script.js` fires an `anantam:scene` event from `showScene()`; the cinema layer uses it to switch Navya's expression, atmosphere, music theme and scene sequences (Awakening, Nandhan, Vritra, Gate).
+- Relic quest: click the HUD "Explore" button. Find the Lotus (Moonlit Garden), Diamond (Singing Caves), Key (Forgotten Tower, light the lantern first), then place all three in the Gate sockets. Nothing is collected automatically.
+- Sound & FX panel: mute, music volume, effects volume, subtitles, calm effects. Sound effects are synthesised, so no extra audio files are needed.
+
+### Run locally
+`python3 -m http.server 8000` in this folder, then open http://localhost:8000 (opening index.html directly also works).
+
+### Known limits
+- Fonts (Google Fonts) and Three.js (jsDelivr, for the optional 3D Navya view) load from the internet; offline, system fonts are used and the 3D view is unavailable.
+- Navya uses supplied 2D images. There is no eye tracking (it would need a rigged asset).
+- Vritra's glowing eyes and the Nandhan scene use the existing artwork only.

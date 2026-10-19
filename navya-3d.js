@@ -6,7 +6,7 @@
   const canvas = document.getElementById('navya3DCanvas');
   const wrap = document.querySelector('.character-wrap');
   if (!toggle || !canvas || !wrap) return;
-  let renderer, scene, camera, model, frame, active = false, dragging = false, lastX = 0, resizeObserver;
+  let renderer, scene, camera, model, frame, active = false, dragging = false, lastX = 0, resizeObserver, targetTiltX = 0, targetTiltY = 0;
   const setFallback = () => {
     toggle.disabled = true;
     toggle.textContent = '✨ 3D view needs an internet connection';
@@ -48,7 +48,12 @@
     resizeObserver = new ResizeObserver(resize); resizeObserver.observe(wrap);
     function animate() {
       frame = requestAnimationFrame(animate);
-      if (model && !dragging) model.rotation.y += .0018;
+      if (model && !dragging) {
+        model.rotation.y += .0012;
+        model.rotation.x += (targetTiltX - model.rotation.x) * .045;
+        // Small pointer-driven turn makes the cut-out feel responsive without pretending it has a rigged head.
+        model.rotation.y += (targetTiltY - model.rotation.y) * .025;
+      }
       if (model) model.position.y = Math.sin(Date.now() * .0012) * .035;
       sparkleGroup.rotation.y += .001;
       renderer.render(scene, camera);
@@ -63,6 +68,17 @@
     const w = Math.max(1, wrap.clientWidth), h = Math.max(1, wrap.clientHeight);
     renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
   }
+  // Desktop cursor and mobile touch adapt the whole portrait's subtle tilt.
+  wrap.addEventListener('pointermove', e => {
+    if (!active || dragging) return;
+    const rect = wrap.getBoundingClientRect();
+    const nx = ((e.clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1;
+    const ny = ((e.clientY - rect.top) / Math.max(1, rect.height)) * 2 - 1;
+    targetTiltY = Math.max(-.13, Math.min(.13, nx * .13));
+    targetTiltX = Math.max(-.07, Math.min(.07, -ny * .07));
+  }, { passive: true });
+  wrap.addEventListener('pointerleave', () => { targetTiltX = 0; targetTiltY = 0; });
+
   toggle.addEventListener('click', () => {
     if (!window.THREE) { setFallback(); return; }
     if (!renderer) init();
